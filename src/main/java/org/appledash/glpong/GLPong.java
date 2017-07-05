@@ -1,6 +1,8 @@
-package org.appledash.lwjgltest;
+package org.appledash.glpong;
 
 import me.jordin.deltoid.vector.Vec3;
+import org.appledash.glpong.structures.Ball;
+import org.appledash.glpong.structures.Paddle;
 import org.lwjgl.LWJGLException;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.Display;
@@ -113,5 +115,10 @@ public class GLPong {
 
     public Paddle[] getPaddles() {
         return new Paddle[]{leftPaddle, rightPaddle};
+    }
+
+    public static void main(String[] args) {
+        GLPong game = new GLPong();
+        game.enterGameLoop();
     }
 }

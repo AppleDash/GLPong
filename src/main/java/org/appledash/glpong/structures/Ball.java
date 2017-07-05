@@ -1,7 +1,8 @@
-package org.appledash.lwjgltest;
+package org.appledash.glpong.structures;
 
 import me.jordin.deltoid.vector.Vec3;
 import me.jordin.deltoid.world.PhysicsObject;
+import org.appledash.glpong.GLPong;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.GL11;

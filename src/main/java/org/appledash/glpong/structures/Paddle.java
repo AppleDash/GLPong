@@ -1,4 +1,4 @@
-package org.appledash.lwjgltest;
+package org.appledash.glpong.structures;
 
 import me.jordin.deltoid.vector.Vec3;
 import org.lwjgl.opengl.Display;
