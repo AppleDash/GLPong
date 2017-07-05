@@ -2,6 +2,7 @@ target/
 out/
 *.iml
 .idea/
+natives/
 *.eml
 dependency-reduced-pom.xml
 

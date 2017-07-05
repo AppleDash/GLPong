@@ -14,7 +14,7 @@ import org.lwjgl.opengl.GL11;
 public class GLPong {
     private Ball ball;
     private Paddle leftPaddle;
-    private final int speedMultiplier = 15;
+    private Paddle rightPaddle;
 
     public GLPong() {
         try {
@@ -23,8 +23,9 @@ public class GLPong {
             throw new RuntimeException("Failed to setup LWJGL Display!");
         }
 
-        this.ball = new Ball(new Vec3(Display.getWidth() / 2, Display.getHeight() / 2, 0));
-        this.leftPaddle = new Paddle(new Vec3(50, 50, 0));
+        this.ball = new Ball(new Vec3(Display.getWidth() / 2, Display.getHeight() / 2));
+        this.leftPaddle = new Paddle(new Vec3(50, Display.getHeight() / 2));
+        this.rightPaddle = new Paddle(new Vec3(Display.getWidth() - 50, Display.getHeight() / 2));
     }
 
     private void setupDisplay() throws LWJGLException {
@@ -42,33 +43,64 @@ public class GLPong {
     }
 
     public void enterGameLoop() {
+        long prevTime = System.currentTimeMillis();
         while (!Display.isCloseRequested()) {
+            double deltaTime = (System.currentTimeMillis() - prevTime) / 1000D;
+            prevTime = System.currentTimeMillis();
             this.draw();
 
-            ball.update(this);
+            ball.update(this, deltaTime);
 
             Display.update();
-            this.handleKeyboardEvents();
+
+            this.controlPadles(deltaTime);
         }
+    }
+
+    private void controlPadles(double deltaTime) {
+        int leftDirection = 0;
+        int rightDirection = 0;
+
+        if (Keyboard.isKeyDown(Keyboard.KEY_W)) {
+            leftDirection++;
+        }
+        if (Keyboard.isKeyDown(Keyboard.KEY_S)) {
+            leftDirection--;
+        }
+
+        if (Keyboard.isKeyDown(Keyboard.KEY_UP)) {
+            rightDirection++;
+        }
+
+        if (Keyboard.isKeyDown(Keyboard.KEY_DOWN)) {
+            rightDirection--;
+        }
+
+        if (Keyboard.isKeyDown(Keyboard.KEY_B)) {
+            double deltaY1 = ball.getPosition().y - leftPaddle.getPosition().y;
+            double deltaY2 = ball.getPosition().y - rightPaddle.getPosition().y;
+            double minDeltaY = 50;
+            if (Math.abs(deltaY1) > minDeltaY && ball.getVelocity().x < 0) {
+                leftDirection = (deltaY1) < 0 ? 1 : -1;
+            }
+
+            if (Math.abs(deltaY2) > minDeltaY && ball.getVelocity().x > 0) {
+                rightDirection = (deltaY2) < 0 ? 1 : -1;
+            }
+        }
+
+        leftPaddle.move(leftDirection, deltaTime);
+        rightPaddle.move(rightDirection, deltaTime);
     }
 
     private void draw() {
         GL11.glClear(GL11.GL_COLOR_BUFFER_BIT);
         leftPaddle.draw();
+        rightPaddle.draw();
         ball.draw();
     }
 
-    private void handleKeyboardEvents() {
-        while (Keyboard.next()) {
-            if (Keyboard.getEventKey() == Keyboard.KEY_S) {
-                leftPaddle.move(new Vec3(0, speedMultiplier, 0));
-            } else if (Keyboard.getEventKey() == Keyboard.KEY_W) {
-                leftPaddle.move(new Vec3(0, -speedMultiplier, 0));
-            }
-        }
-    }
-
     public Paddle[] getPaddles() {
-        return new Paddle[]{leftPaddle};
+        return new Paddle[]{leftPaddle, rightPaddle};
     }
 }
