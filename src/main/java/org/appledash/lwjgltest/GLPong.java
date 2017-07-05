@@ -7,6 +7,9 @@ import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.DisplayMode;
 import org.lwjgl.opengl.GL11;
 
+import java.io.IOException;
+import java.util.Properties;
+
 /**
  * Created by appledash on 7/4/17.
  * Blackjack is best pony.
@@ -29,6 +32,14 @@ public class GLPong {
     }
 
     private void setupDisplay() throws LWJGLException {
+        Properties properties = new Properties();
+        try {
+            properties.load(this.getClass().getClassLoader().getResourceAsStream("properties/glpong.properties"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        Display.setTitle("GLPong v" + properties.getProperty("version"));
         Display.setDisplayMode(new DisplayMode(1024, 768));
         Display.create();
         Keyboard.enableRepeatEvents(true);
