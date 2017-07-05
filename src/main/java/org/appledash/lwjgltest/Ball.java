@@ -10,6 +10,7 @@ import org.lwjgl.opengl.GL11;
  */
 public class Ball {
     private static final int RADIUS = 15;
+    private static final double MAX = 1;
     private long prevTime = System.currentTimeMillis();
 
     private PhysicsObject physicsObject;
@@ -61,16 +62,23 @@ public class Ball {
         GL11.glTranslated(-physicsObject.getPosition().x, -physicsObject.getPosition().y, 0);
     }
 
-    public void update() {
+    public void update(GLPong pong) {
+        this.physicsObject.update((System.currentTimeMillis() - prevTime) / 1000D);
+        this.prevTime = System.currentTimeMillis();
 
         Vec3 pos = physicsObject.getPosition();
         Vec3 vel = physicsObject.getVelocity();
 
-        for (Paddle paddle : new Paddle[] { Main.leftPaddle }) {
+        for (Paddle paddle : pong.getPaddles()) {
+            if (pos.x - RADIUS < paddle.getPosition().x) {
 
+            }
         }
-
-        this.physicsObject.update((System.currentTimeMillis() - prevTime) / 1000D);
-        this.prevTime = System.currentTimeMillis();
+        /*if (pos.x - RADIUS < paddle.getPosition().x) {
+            Vec3 normal = pos.subtract(paddle.getPosition()).normalize();
+            Vec3 dotProduct = vel.dot(normal);
+            double scale = 2 * dotProduct.manhattan();
+            physicsObject.setVelocity(vel.subtract(normal.scale(scale)));
+        }*/
     }
 }
