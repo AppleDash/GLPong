@@ -18,8 +18,7 @@ import java.util.Properties;
  */
 public class GLPong {
     private Ball ball;
-    private Paddle leftPaddle;
-    private Paddle rightPaddle;
+    private Paddle[] paddles = new Paddle[2];
 
     public GLPong() {
         try {
@@ -29,8 +28,8 @@ public class GLPong {
         }
 
         this.ball = new Ball(new Vec3(Display.getWidth() / 2, Display.getHeight() / 2));
-        this.leftPaddle = new Paddle(new Vec3(50, Display.getHeight() / 2));
-        this.rightPaddle = new Paddle(new Vec3(Display.getWidth() - 50, Display.getHeight() / 2));
+        this.paddles[0] = new Paddle(new Vec3(50, Display.getHeight() / 2));
+        this.paddles[1] = new Paddle(new Vec3(Display.getWidth() - 50, Display.getHeight() / 2));
     }
 
     private void setupDisplay() throws LWJGLException {
@@ -90,8 +89,8 @@ public class GLPong {
         }
 
         if (Keyboard.isKeyDown(Keyboard.KEY_B)) {
-            double deltaY1 = ball.getPosition().y - leftPaddle.getPosition().y;
-            double deltaY2 = ball.getPosition().y - rightPaddle.getPosition().y;
+            double deltaY1 = ball.getPosition().y - this.paddles[0].getPosition().y;
+            double deltaY2 = ball.getPosition().y - this.paddles[1].getPosition().y;
             double minDeltaY = 50;
             if (Math.abs(deltaY1) > minDeltaY && ball.getVelocity().x < 0) {
                 leftDirection = (deltaY1) < 0 ? 1 : -1;
@@ -102,19 +101,21 @@ public class GLPong {
             }
         }
 
-        leftPaddle.move(leftDirection, deltaTime);
-        rightPaddle.move(rightDirection, deltaTime);
+        this.paddles[0].move(leftDirection, deltaTime);
+        this.paddles[1].move(rightDirection, deltaTime);
     }
 
     private void draw() {
         GL11.glClear(GL11.GL_COLOR_BUFFER_BIT);
-        leftPaddle.draw();
-        rightPaddle.draw();
+        for (Paddle p : this.paddles) {
+            p.draw();
+        }
+
         ball.draw();
     }
 
     public Paddle[] getPaddles() {
-        return new Paddle[]{leftPaddle, rightPaddle};
+        return this.paddles;
     }
 
     public static void main(String[] args) {
