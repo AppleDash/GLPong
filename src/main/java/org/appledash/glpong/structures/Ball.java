@@ -26,9 +26,10 @@ public class Ball {
     }
 
     private void respawn() {
-        Vec3 randomVel = Vec3.X_AXIS.scale(MAX_VELOCITY).rotateAboutZ(Math.random() * TAU);
+        // Vec3 randomVel = Vec3.X_AXIS.scale(MAX_VELOCITY).rotateAboutZ(Math.random() * TAU);
 
-        this.physicsObject = new PhysicsObject(origin, randomVel, Vec3.ORIGIN);
+        Vec3 randomVel = new Vec3((Math.random() - 0.5) * 3, Math.random() - 0.5);
+        this.physicsObject = new PhysicsObject(origin, randomVel.normalize(MAX_VELOCITY), Vec3.ORIGIN);
 
         // this.physicsObject = new PhysicsObject(origin, new Vec3(-100, 0, 0), Vec3.ORIGIN);
         // this.physicsObject = new PhysicsObject(origin, Vec3.X_AXIS.scale(-200), Vec3.ORIGIN);

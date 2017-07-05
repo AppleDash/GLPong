@@ -69,7 +69,7 @@ public class GLPong {
         }
     }
 
-    private void controlPadles(double deltaTime) {
+    private void controlPaddles(double deltaTime) {
         int leftDirection = 0;
         int rightDirection = 0;
 
