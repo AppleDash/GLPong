@@ -65,7 +65,7 @@ public class GLPong {
 
             Display.update();
 
-            this.controlPadles(deltaTime);
+            this.controlPaddles(deltaTime);
         }
     }
 
