@@ -6,6 +6,7 @@ import org.apache.logging.log4j.Logger;
 import org.appledash.glpong.structures.Ball;
 import org.appledash.glpong.structures.Paddle;
 import org.appledash.glpong.utils.FPSCounter;
+import org.appledash.glpong.utils.RenderUtils;
 import org.appledash.glpong.utils.Timer;
 import org.lwjgl.LWJGLException;
 import org.lwjgl.input.Keyboard;
@@ -43,8 +44,8 @@ public class GLPong {
         }
 
         this.ball = new Ball(new Vec3(Display.getWidth() / 2, Display.getHeight() / 2));
-        this.paddles[LEFT] = new Paddle(new Vec3(50, Display.getHeight() / 2));
-        this.paddles[RIGHT] = new Paddle(new Vec3(Display.getWidth() - 50, Display.getHeight() / 2));
+        this.paddles[LEFT] = new Paddle(new Vec3(50, Display.getHeight() / 2), vel -> vel.x < 0);
+        this.paddles[RIGHT] = new Paddle(new Vec3(Display.getWidth() - 50, Display.getHeight() / 2), vel -> vel.x > 0);
 
         trueTypeFont = new TrueTypeFont(new Font("Verdana", Font.PLAIN, 16), true);
 
@@ -89,6 +90,10 @@ public class GLPong {
             Display.update();
 
             this.controlPaddles(deltaTime);
+
+            for (Paddle paddle : getPaddles()) {
+                paddle.update(this, deltaTime);
+            }
         }
     }
 
@@ -136,23 +141,17 @@ public class GLPong {
 
         ball.draw();
 
-        this.drawString(5, 5, "FPS: " + this.fpsCounter.getFps());
+        RenderUtils.drawString(trueTypeFont,"FPS: " + this.fpsCounter.getFps(),5, 5);
 
         this.fpsCounter.incrementFramesRendered();
     }
 
-    private void drawString(int x, int y, String str) {
-        GL11.glPushMatrix();
-        GL11.glEnable(GL11.GL_BLEND);
-        GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-        this.trueTypeFont.drawString(x, y, str);
-        this.trueTypeFont.drawString(x + 1, y + 1, str);
-        GL11.glDisable(GL11.GL_BLEND);
-        GL11.glPopMatrix();
-    }
-
     public Paddle[] getPaddles() {
         return this.paddles;
+    }
+
+    public Ball[] getBalls() {
+        return new Ball[] { this.ball };
     }
 
     public static void main(String[] args) {
