@@ -49,15 +49,14 @@ public class GLPong {
 
         Display.setTitle("GLPong v" + properties.getProperty("version"));
         Display.setDisplayMode(displayMode);
-        // Display.setDisplayMode(new DisplayMode(1024, 768));
         Display.create();
         Keyboard.enableRepeatEvents(true);
         Display.setVSyncEnabled(true);
 
-        GL11.glViewport(0, 0, 1024, 768);
+        GL11.glViewport(0, 0, Display.getWidth(), Display.getHeight());
         GL11.glMatrixMode(GL11.GL_PROJECTION);
         GL11.glLoadIdentity();
-        GL11.glOrtho(0, 1024, 768, 0, -1, 1);
+        GL11.glOrtho(0, Display.getWidth(), Display.getHeight(), 0, -1, 1);
         GL11.glMatrixMode(GL11.GL_MODELVIEW);
         GL11.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
     }
