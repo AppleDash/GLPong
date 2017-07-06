@@ -1,6 +1,8 @@
 package org.appledash.glpong;
 
 import me.jordin.deltoid.vector.Vec3;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.appledash.glpong.structures.Ball;
 import org.appledash.glpong.structures.Paddle;
 import org.lwjgl.LWJGLException;
@@ -17,22 +19,27 @@ import java.util.Properties;
  * Blackjack is best pony.
  */
 public class GLPong {
+    private static final Logger LOGGER = LogManager.getLogger("GLPong");
+    // Array indexes for the left and right paddles.
+    private static final int LEFT = 0;
+    private static final int RIGHT = 1;
+
     private Ball ball;
     private Paddle[] paddles = new Paddle[2];
 
-    public GLPong() {
+    public GLPong(DisplayMode displayMode) {
         try {
-            this.setupDisplay();
+            this.setupDisplay(displayMode);
         } catch (LWJGLException e) {
             throw new RuntimeException("Failed to setup LWJGL Display!");
         }
 
         this.ball = new Ball(new Vec3(Display.getWidth() / 2, Display.getHeight() / 2));
-        this.paddles[0] = new Paddle(new Vec3(50, Display.getHeight() / 2));
-        this.paddles[1] = new Paddle(new Vec3(Display.getWidth() - 50, Display.getHeight() / 2));
+        this.paddles[LEFT] = new Paddle(new Vec3(50, Display.getHeight() / 2));
+        this.paddles[RIGHT] = new Paddle(new Vec3(Display.getWidth() - 50, Display.getHeight() / 2));
     }
 
-    private void setupDisplay() throws LWJGLException {
+    private void setupDisplay(DisplayMode displayMode) throws LWJGLException {
         Properties properties = new Properties();
         try {
             properties.load(this.getClass().getClassLoader().getResourceAsStream("properties/glpong.properties"));
@@ -41,7 +48,8 @@ public class GLPong {
         }
 
         Display.setTitle("GLPong v" + properties.getProperty("version"));
-        Display.setDisplayMode(new DisplayMode(1024, 768));
+        Display.setDisplayMode(displayMode);
+        // Display.setDisplayMode(new DisplayMode(1024, 768));
         Display.create();
         Keyboard.enableRepeatEvents(true);
         Display.setVSyncEnabled(true);
@@ -89,8 +97,8 @@ public class GLPong {
         }
 
         if (Keyboard.isKeyDown(Keyboard.KEY_B)) {
-            double deltaY1 = ball.getPosition().y - this.paddles[0].getPosition().y;
-            double deltaY2 = ball.getPosition().y - this.paddles[1].getPosition().y;
+            double deltaY1 = ball.getPosition().y - this.paddles[LEFT].getPosition().y;
+            double deltaY2 = ball.getPosition().y - this.paddles[RIGHT].getPosition().y;
             double minDeltaY = 50;
             if (Math.abs(deltaY1) > minDeltaY && ball.getVelocity().x < 0) {
                 leftDirection = (deltaY1) < 0 ? 1 : -1;
@@ -101,8 +109,8 @@ public class GLPong {
             }
         }
 
-        this.paddles[0].move(leftDirection, deltaTime);
-        this.paddles[1].move(rightDirection, deltaTime);
+        this.paddles[LEFT].move(leftDirection, deltaTime);
+        this.paddles[RIGHT].move(rightDirection, deltaTime);
     }
 
     private void draw() {
@@ -119,7 +127,19 @@ public class GLPong {
     }
 
     public static void main(String[] args) {
-        GLPong game = new GLPong();
+        DisplayMode displayMode;
+
+        if (args.length == 2) {
+            int width = Integer.parseInt(args[0]);
+            int height = Integer.parseInt(args[1]);
+            LOGGER.info("Using display mode " + width + "x" + height);
+            displayMode = new DisplayMode(width, height);
+        } else {
+            displayMode = new DisplayMode(1024, 768);
+            LOGGER.info("Using default display mode 1024x768");
+        }
+
+        GLPong game = new GLPong(displayMode);
         game.enterGameLoop();
     }
 }
