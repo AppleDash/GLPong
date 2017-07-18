@@ -108,7 +108,7 @@ public class GLPong {
                 // ball.update(this, deltaTime);
                 this.controlPaddles(deltaTime);
                 for (Paddle paddle : getPaddles()) {
-                    paddle.update(this, deltaTime);
+                    // paddle.update(this, deltaTime);
                 }
             }
 
