@@ -3,6 +3,8 @@ package org.appledash.glpong;
 import me.jordin.deltoid.vector.Vec3;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.appledash.glpong.gui.Gui;
+import org.appledash.glpong.gui.GuiPause;
 import org.appledash.glpong.structures.Ball;
 import org.appledash.glpong.structures.Paddle;
 import org.appledash.glpong.utils.FPSCounter;
@@ -31,9 +33,12 @@ public class GLPong {
     private Ball ball;
     private Paddle[] paddles = new Paddle[2];
 
+    private TrueTypeFont[] fontPool = new TrueTypeFont[128];
     private TrueTypeFont trueTypeFont;
     private Timer timer;
     private FPSCounter fpsCounter;
+
+    private Gui gui;
 
     public GLPong(DisplayMode displayMode) {
         try {
@@ -84,11 +89,22 @@ public class GLPong {
 
             this.draw();
 
-            ball.update(this, deltaTime);
+
 
             Display.update();
 
-            this.controlPaddles(deltaTime);
+            while (Keyboard.next()) {
+                if (Keyboard.getEventKey() == Keyboard.KEY_ESCAPE && Keyboard.getEventKeyState()) {
+                    this.gui = this.gui == null ? new GuiPause(this) : null;
+                    break;
+                }
+            }
+
+            if (this.gui == null) {
+                ball.update(this, deltaTime);
+                this.controlPaddles(deltaTime);
+            }
+
         }
     }
 
@@ -130,23 +146,36 @@ public class GLPong {
 
     private void draw() {
         GL11.glClear(GL11.GL_COLOR_BUFFER_BIT);
-        for (Paddle p : this.paddles) {
-            p.draw();
-        }
 
-        ball.draw();
+        if (this.gui != null) {
+            this.gui.drawGui();
+        } else {
+            for (Paddle p : this.paddles) {
+                p.draw();
+            }
+
+            ball.draw();
+        }
 
         this.drawString(5, 5, "FPS: " + this.fpsCounter.getFps());
 
         this.fpsCounter.incrementFramesRendered();
     }
 
-    private void drawString(int x, int y, String str) {
+    public void drawString(int x, int y, String str) {
+        this.drawString(x, y, str, 16);
+    }
+
+    public void drawString(int x, int y, String str, int size) {
+        if (this.fontPool[size] == null) {
+            this.fontPool[size] = new TrueTypeFont(new Font("Verdana", Font.PLAIN, size), true);
+        }
+
         GL11.glPushMatrix();
         GL11.glEnable(GL11.GL_BLEND);
         GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-        this.trueTypeFont.drawString(x, y, str);
-        this.trueTypeFont.drawString(x + 1, y + 1, str);
+        this.fontPool[size].drawString(x, y, str);
+        // this.trueTypeFont.drawString(x + 1, y + 1, str);
         GL11.glDisable(GL11.GL_BLEND);
         GL11.glPopMatrix();
     }
@@ -170,5 +199,9 @@ public class GLPong {
 
         GLPong game = new GLPong(displayMode);
         game.enterGameLoop();
+    }
+
+    public TrueTypeFont getFont() {
+        return trueTypeFont;
     }
 }
