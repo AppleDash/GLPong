@@ -2,7 +2,6 @@ package org.appledash.glpong.structures;
 
 import me.jordin.deltoid.vector.Vec3;
 import me.jordin.deltoid.world.PhysicsObject;
-import org.appledash.glpong.GLPong;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.GL11;
@@ -74,13 +73,13 @@ public class Ball {
         GL11.glTranslated(-physicsObject.getPosition().x, -physicsObject.getPosition().y, 0);
     }
 
-    public void update(GLPong pong, double deltaTime) {
+    public void updateLocally(Paddle[] paddles, double deltaTime) {
         this.physicsObject.update(deltaTime);
 
         Vec3 pos = physicsObject.getPosition();
         Vec3 vel = physicsObject.getVelocity();
 
-        for (Paddle paddle : pong.getPaddles()) {
+        for (Paddle paddle : paddles) {
             double halfHeight = paddle.getHeight() / 2;
             Vec3 deltaPos = paddle.getPosition().subtract(pos);
 

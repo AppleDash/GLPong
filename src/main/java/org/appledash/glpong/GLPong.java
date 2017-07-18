@@ -3,6 +3,8 @@ package org.appledash.glpong;
 import me.jordin.deltoid.vector.Vec3;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.appledash.glpong.controller.BallController;
+import org.appledash.glpong.controller.BallControllerLocal;
 import org.appledash.glpong.gui.Gui;
 import org.appledash.glpong.gui.GuiPause;
 import org.appledash.glpong.structures.Ball;
@@ -39,6 +41,7 @@ public class GLPong {
     private FPSCounter fpsCounter;
 
     private Gui gui;
+    private BallController ballController;
 
     public GLPong(DisplayMode displayMode) {
         try {
@@ -55,6 +58,7 @@ public class GLPong {
 
         this.timer = new Timer();
         this.fpsCounter = new FPSCounter(this.timer);
+        this.ballController = new BallControllerLocal(this, this.ball);
     }
 
     private void setupDisplay(DisplayMode displayMode) throws LWJGLException {
@@ -89,8 +93,6 @@ public class GLPong {
 
             this.draw();
 
-
-
             Display.update();
 
             while (Keyboard.next()) {
@@ -101,7 +103,8 @@ public class GLPong {
             }
 
             if (this.gui == null) {
-                ball.update(this, deltaTime);
+                this.ballController.controlBall(deltaTime);
+                // ball.update(this, deltaTime);
                 this.controlPaddles(deltaTime);
             }
 
