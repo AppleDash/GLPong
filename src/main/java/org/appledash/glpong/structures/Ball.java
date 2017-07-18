@@ -55,6 +55,7 @@ public class Ball {
                     && ((pos.y - RADIUS) < (paddle.getPosition().y + halfHeight));
 
             boolean collisionDetected = correctX && correctY;
+
             if (collisionDetected) {
                 double deltaY = deltaPos.y;
                 double additionalMotionY = vel.length() * (-deltaY * 0.01);
