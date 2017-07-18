@@ -12,4 +12,6 @@ public abstract class PaddleController {
     public PaddleController(Paddle paddle) {
         this.paddle = paddle;
     }
+
+    public abstract void controlPaddle(double deltaTime);
 }

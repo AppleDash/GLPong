@@ -19,7 +19,7 @@ public class Paddle {
     private Vec3 position;
     private Vec3 velocity;
 
-    private Predicate<Vec3> motionValidForCollision;
+    public Predicate<Vec3> motionValidForCollision;
 
     public Paddle(Vec3 position, Predicate<Vec3> motionValidForCollision) {
         this.position = position;

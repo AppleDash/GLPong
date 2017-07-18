@@ -5,6 +5,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.appledash.glpong.controller.BallController;
 import org.appledash.glpong.controller.BallControllerLocal;
+import org.appledash.glpong.controller.PaddleController;
+import org.appledash.glpong.controller.PaddleControllerLocal;
 import org.appledash.glpong.gui.Gui;
 import org.appledash.glpong.gui.GuiPause;
 import org.appledash.glpong.structures.Ball;
@@ -34,7 +36,10 @@ public class GLPong {
     private static final int RIGHT = 1;
 
     private Ball ball;
+    private BallController ballController;
+
     private Paddle[] paddles = new Paddle[2];
+    private PaddleController[] paddleControllers = new PaddleController[2];
 
     private TrueTypeFont[] fontPool = new TrueTypeFont[128];
     private TrueTypeFont trueTypeFont;
@@ -42,7 +47,6 @@ public class GLPong {
     private FPSCounter fpsCounter;
 
     private Gui gui;
-    private BallController ballController;
 
     public GLPong(DisplayMode displayMode) {
         try {
@@ -54,6 +58,10 @@ public class GLPong {
         this.ball = new Ball(new Vec3(Display.getWidth() / 2, Display.getHeight() / 2));
         this.paddles[LEFT] = new Paddle(new Vec3(50, Display.getHeight() / 2), vel -> vel.x < 0);
         this.paddles[RIGHT] = new Paddle(new Vec3(Display.getWidth() - 50, Display.getHeight() / 2), vel -> vel.x > 0);
+
+        this.paddleControllers[LEFT] = new PaddleControllerLocal(this, this.paddles[LEFT], Keyboard.KEY_W, Keyboard.KEY_S);
+        this.paddleControllers[RIGHT] = new PaddleControllerLocal(this, this.paddles[RIGHT], Keyboard.KEY_UP, Keyboard.KEY_DOWN);
+
 
         trueTypeFont = new TrueTypeFont(new Font("Verdana", Font.PLAIN, 16), true);
 
@@ -105,52 +113,10 @@ public class GLPong {
 
             if (this.gui == null) {
                 this.ballController.controlBall(deltaTime);
-                // ball.update(this, deltaTime);
-                this.controlPaddles(deltaTime);
-                for (Paddle paddle : getPaddles()) {
-                    // paddle.update(this, deltaTime);
-                }
-            }
-
-
-
-        }
-    }
-
-    private void controlPaddles(double deltaTime) {
-        int leftDirection = 0;
-        int rightDirection = 0;
-
-        if (Keyboard.isKeyDown(Keyboard.KEY_W)) {
-            leftDirection++;
-        }
-        if (Keyboard.isKeyDown(Keyboard.KEY_S)) {
-            leftDirection--;
-        }
-
-        if (Keyboard.isKeyDown(Keyboard.KEY_UP)) {
-            rightDirection++;
-        }
-
-        if (Keyboard.isKeyDown(Keyboard.KEY_DOWN)) {
-            rightDirection--;
-        }
-
-        if (Keyboard.isKeyDown(Keyboard.KEY_B)) {
-            double deltaY1 = ball.getPosition().y - this.paddles[LEFT].getPosition().y;
-            double deltaY2 = ball.getPosition().y - this.paddles[RIGHT].getPosition().y;
-            double minDeltaY = 50;
-            if (Math.abs(deltaY1) > minDeltaY && ball.getVelocity().x < 0) {
-                leftDirection = (deltaY1) < 0 ? 1 : -1;
-            }
-
-            if (Math.abs(deltaY2) > minDeltaY && ball.getVelocity().x > 0) {
-                rightDirection = (deltaY2) < 0 ? 1 : -1;
+                this.paddleControllers[LEFT].controlPaddle(deltaTime);
+                this.paddleControllers[RIGHT].controlPaddle(deltaTime);
             }
         }
-
-        this.paddles[LEFT].move(leftDirection, deltaTime);
-        this.paddles[RIGHT].move(rightDirection, deltaTime);
     }
 
     private void draw() {
@@ -197,6 +163,10 @@ public class GLPong {
         return new Ball[] { this.ball };
     }
 
+    public Ball getPrimaryBall() {
+        return ball;
+    }
+
     public static void main(String[] args) {
         DisplayMode displayMode;
 
@@ -212,9 +182,5 @@ public class GLPong {
 
         GLPong game = new GLPong(displayMode);
         game.enterGameLoop();
-    }
-
-    public TrueTypeFont getFont() {
-        return trueTypeFont;
     }
 }
