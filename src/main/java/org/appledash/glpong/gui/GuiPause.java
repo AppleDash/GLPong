@@ -1,6 +1,7 @@
 package org.appledash.glpong.gui;
 
 import org.appledash.glpong.GLPong;
+import org.appledash.glpong.utils.RenderUtils;
 import org.lwjgl.opengl.Display;
 
 /**
@@ -17,7 +18,7 @@ public class GuiPause extends Gui {
         int width = Display.getWidth();
         int height = Display.getHeight();
 
-        this.game.drawString(width / 2, height / 2, "Game paused", 40);
+       RenderUtils.drawString("Game paused", (width / 2) - (RenderUtils.getStringWidth("Game paused", 40) / 2), height / 2, 40);
     }
 
     @Override

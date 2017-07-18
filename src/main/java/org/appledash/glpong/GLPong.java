@@ -132,27 +132,9 @@ public class GLPong {
             ball.draw();
         }
 
-        RenderUtils.drawString(trueTypeFont,"FPS: " + this.fpsCounter.getFps(),5, 5);
+        RenderUtils.drawString("FPS: " + this.fpsCounter.getFps(),5, 5);
 
         this.fpsCounter.incrementFramesRendered();
-    }
-
-    public void drawString(int x, int y, String str) {
-        this.drawString(x, y, str, 16);
-    }
-
-    public void drawString(int x, int y, String str, int size) {
-        if (this.fontPool[size] == null) {
-            this.fontPool[size] = new TrueTypeFont(new Font("Verdana", Font.PLAIN, size), true);
-        }
-
-        GL11.glPushMatrix();
-        GL11.glEnable(GL11.GL_BLEND);
-        GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-        this.fontPool[size].drawString(x, y, str);
-        // this.trueTypeFont.drawString(x + 1, y + 1, str);
-        GL11.glDisable(GL11.GL_BLEND);
-        GL11.glPopMatrix();
     }
 
     public Paddle[] getPaddles() {

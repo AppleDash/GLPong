@@ -4,20 +4,44 @@ import me.jordin.deltoid.vector.Vec3;
 import org.lwjgl.opengl.GL11;
 import org.newdawn.slick.TrueTypeFont;
 
+import java.awt.*;
+
 /**
  * Created by Jordin on 7/5/2017.
  * Jordin is still best hacker.
  */
 public class RenderUtils {
     private static final double TAU = 2 * Math.PI;
+    private static final int MAX_FONT_SIZE = 40; // Anything bigger glitches out
+    private static final TrueTypeFont[] fontPool = new TrueTypeFont[MAX_FONT_SIZE];
 
-    public static void drawString(TrueTypeFont trueTypeFont, String str, double x, double y) {
+    private static TrueTypeFont getFont(int size) {
+        if (size > MAX_FONT_SIZE) {
+            throw new IllegalArgumentException("Font size must be at most " + MAX_FONT_SIZE);
+        }
+
+        if (fontPool[size - 1] != null) {
+            return fontPool[size - 1];
+        }
+
+        return fontPool[size - 1] = new TrueTypeFont(new Font("Verdana", Font.BOLD, size), true);
+    }
+
+    public static void drawString(String str, double x, double y, int size) {
         GL11.glPushMatrix();
         GL11.glEnable(GL11.GL_BLEND);
         GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-        trueTypeFont.drawString((float) x, (float) y, str);
+        getFont(size).drawString((float) x, (float) y, str);
         GL11.glDisable(GL11.GL_BLEND);
         GL11.glPopMatrix();
+    }
+
+    public static void drawString(String str, double x, double y) {
+        drawString(str, x, y, 16);
+    }
+
+    public static int getStringWidth(String str, int fontSize) {
+        return getFont(fontSize).getWidth(str);
     }
 
     public static void renderLine(double startX, double startY, double endX, double endY) {
